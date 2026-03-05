@@ -12,7 +12,8 @@ import { TypeOrmClientRepository } from './modules/clients/infrastructure/reposi
 import { TypeOrmUserRepository } from './modules/users/infrastructure/repositories/typeorm-user.repository';
 import { TypeOrmFileBatchRepository } from './modules/files/infrastructure/repositories/typeorm-file-batch.repository';
 import { TypeOrmCaseFileRepository } from './modules/files/infrastructure/repositories/typeorm-case-file.repository';
-import { LocalStorageStubAdapter } from './modules/files/infrastructure/storage/local-storage.stub';
+import { LocalStorageAdapter } from './modules/files/infrastructure/storage/local-storage.adapter';
+import { CloudinaryStorageAdapter } from './modules/files/infrastructure/storage/cloudinary-storage.adapter';
 import { TypeOrmTransactionManagerAdapter } from './shared/infrastructure/typeorm/typeorm-transaction-manager.adapter';
 import { CreateCaseUseCase } from './modules/cases/application/use-cases/create-case.use-case';
 import { UploadCaseFilesUseCase } from './modules/files/application/use-cases/upload-case-files.use-case';
@@ -69,7 +70,15 @@ import { CaseFilesController } from './modules/files/interface/http/case-files.c
     },
     {
       provide: STORAGE_PORT,
-      useClass: LocalStorageStubAdapter,
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        const provider = configService.get<string>('STORAGE_PROVIDER', 'local').toLowerCase();
+        if (provider === 'cloudinary') {
+          return new CloudinaryStorageAdapter(configService);
+        }
+
+        return new LocalStorageAdapter(configService);
+      },
     },
     {
       provide: TRANSACTION_MANAGER,
