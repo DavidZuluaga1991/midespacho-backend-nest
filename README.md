@@ -40,6 +40,11 @@ PORT=3000
 FRONTEND_URL=http://localhost:4200
 FRONTEND_URLS=http://localhost:4200,http://localhost:4000
 
+# Conexion recomendada para Supabase (tiene prioridad si esta definida):
+SUPABASE_URI=postgresql://postgres:<password>@db.<project-ref>.supabase.co:5432/postgres?sslmode=require
+DATABASE_URL=
+
+# Fallback para PostgreSQL local:
 DATABASE_HOST=localhost
 DATABASE_PORT=5432
 DATABASE_USERNAME=midespacho
@@ -71,11 +76,28 @@ npm.cmd install
 ```
 
 ## Base de datos
-Crear base de datos en PostgreSQL y ejecutar migraciones:
+Ejecutar migraciones:
 
 ```powershell
 npm.cmd run migration:run
 ```
+
+Validar conectividad a la base configurada (`SUPABASE_URI` o fallback local):
+
+```powershell
+npm.cmd run db:check
+```
+
+### Seed de datos demo
+Para poblar datos base (cliente, expediente, lote y archivos de ejemplo):
+
+```powershell
+npm.cmd run seed:demo
+```
+
+IDs de demo:
+- `Case ID`: `b8e5a63e-f8d3-427f-8f59-1f30fce8d001`
+- `Client ID`: `bb5b80b7-27ff-4ef3-98ad-0a21c15eb001`
 
 ## Ejecutar proyecto
 ```powershell
