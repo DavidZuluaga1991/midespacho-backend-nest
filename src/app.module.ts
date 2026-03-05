@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -16,6 +18,9 @@ import { CreateCaseUseCase } from './modules/cases/application/use-cases/create-
 import { UploadCaseFilesUseCase } from './modules/files/application/use-cases/upload-case-files.use-case';
 import { ListCaseFilesUseCase } from './modules/files/application/use-cases/list-case-files.use-case';
 import { DeleteCaseFileUseCase } from './modules/files/application/use-cases/delete-case-file.use-case';
+import { GetCaseByIdUseCase } from './modules/cases/application/use-cases/get-case-by-id.use-case';
+import { CasesController } from './modules/cases/interface/http/cases.controller';
+import { CaseFilesController } from './modules/files/interface/http/case-files.controller';
 
 @Module({
   imports: [
@@ -27,11 +32,18 @@ import { DeleteCaseFileUseCase } from './modules/files/application/use-cases/del
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => getTypeOrmConfig(configService),
     }),
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60_000,
+        limit: 100,
+      },
+    ]),
   ],
-  controllers: [AppController],
+  controllers: [AppController, CasesController, CaseFilesController],
   providers: [
     AppService,
     CreateCaseUseCase,
+    GetCaseByIdUseCase,
     UploadCaseFilesUseCase,
     ListCaseFilesUseCase,
     DeleteCaseFileUseCase,
@@ -62,6 +74,10 @@ import { DeleteCaseFileUseCase } from './modules/files/application/use-cases/del
     {
       provide: TRANSACTION_MANAGER,
       useClass: TypeOrmTransactionManagerAdapter,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
     },
   ],
 })
