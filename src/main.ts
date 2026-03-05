@@ -12,9 +12,18 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
   app.setGlobalPrefix('api/v1');
 
+  const allowedOrigins = new Set(
+    (process.env.FRONTEND_URLS ?? '')
+      .split(',')
+      .map((origin) => origin.trim())
+      .filter(Boolean),
+  );
+  allowedOrigins.add(process.env.FRONTEND_URL ?? 'http://localhost:4200');
+  allowedOrigins.add('http://localhost:4000');
+
   app.use(helmet());
   app.enableCors({
-    origin: process.env.FRONTEND_URL ?? 'http://localhost:4200',
+    origin: Array.from(allowedOrigins),
     credentials: true,
   });
 
