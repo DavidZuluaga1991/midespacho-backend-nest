@@ -5,6 +5,7 @@ import {
   CreateCaseRepositoryInput,
   ListCasesRepositoryParams,
   ListCasesRepositoryResult,
+  UpdateCaseRepositoryInput,
 } from '../../application/ports/case-repository.port';
 import { Case } from '../../domain/entities/case';
 import { CaseEntity } from '../persistence/entities/case.entity';
@@ -48,6 +49,33 @@ export class TypeOrmCaseRepository implements CaseRepositoryPort {
     return this.dataSource
       .getRepository(CaseEntity)
       .exists({ where: { code } });
+  }
+
+  async update(
+    caseId: string,
+    input: UpdateCaseRepositoryInput,
+  ): Promise<Case | null> {
+    const repository = this.dataSource.getRepository(CaseEntity);
+    const existing = await repository.findOne({ where: { id: caseId } });
+    if (!existing) {
+      return null;
+    }
+
+    existing.code = input.code;
+    existing.title = input.title;
+    existing.description = input.description;
+    existing.status = input.status;
+    existing.openedAt = input.openedAt;
+    existing.closedAt = input.closedAt;
+    existing.clientId = input.clientId;
+    existing.createdById = input.createdById;
+
+    const updated = await repository.save(existing);
+    return toDomain(updated);
+  }
+
+  async deleteById(caseId: string): Promise<void> {
+    await this.dataSource.getRepository(CaseEntity).delete({ id: caseId });
   }
 
   async findById(caseId: string): Promise<Case | null> {

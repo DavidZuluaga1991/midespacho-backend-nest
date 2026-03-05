@@ -12,6 +12,8 @@ describe('ListCaseFilesUseCase', () => {
   beforeEach(() => {
     caseRepository = {
       create: jest.fn(),
+      update: jest.fn(),
+      deleteById: jest.fn(),
       existsByCode: jest.fn(),
       findById: jest.fn(),
       list: jest.fn(),
