@@ -73,7 +73,7 @@ export class UploadCaseFilesUseCase {
         uploadedFiles.push(uploaded);
       }
 
-      return this.transactionManager.runInTransaction(async (context) => {
+      const persisted = await this.transactionManager.runInTransaction(async (context) => {
         const batch = await this.fileBatchRepository.create(
           {
             caseId: input.caseId,
@@ -105,6 +105,8 @@ export class UploadCaseFilesUseCase {
 
         return { batch, files };
       });
+
+      return persisted;
     } catch (error) {
       await Promise.allSettled(uploadedFiles.map((file) => this.storagePort.delete(file.storageKey)));
       throw error;
