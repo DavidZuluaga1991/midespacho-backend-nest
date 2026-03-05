@@ -49,6 +49,14 @@ void checkConnection()
   .catch((error: unknown) => {
     const message = error instanceof Error ? error.message : String(error);
     console.error('Fallo la conexion a PostgreSQL:', message);
+    if (
+      message.includes('ENOTFOUND') &&
+      process.env.SUPABASE_URI?.includes('.supabase.co')
+    ) {
+      console.error(
+        'Tip: para redes sin IPv6 usa la URI de Supabase "Session pooler" (host *.pooler.supabase.com) en SUPABASE_URI.',
+      );
+    }
     process.exitCode = 1;
   })
   .finally(async () => {
@@ -56,4 +64,3 @@ void checkConnection()
       await AppDataSource.destroy();
     }
   });
-

@@ -12,8 +12,20 @@ export interface CreateCaseRepositoryInput {
   createdById: string | null;
 }
 
+export interface ListCasesRepositoryParams {
+  page: number;
+  limit: number;
+  search?: string;
+}
+
+export interface ListCasesRepositoryResult {
+  data: Case[];
+  total: number;
+}
+
 export interface CaseRepositoryPort {
   create(input: CreateCaseRepositoryInput): Promise<Case>;
   existsByCode(code: string): Promise<boolean>;
   findById(caseId: string): Promise<Case | null>;
+  list(params: ListCasesRepositoryParams): Promise<ListCasesRepositoryResult>;
 }

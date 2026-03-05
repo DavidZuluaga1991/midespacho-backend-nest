@@ -3,7 +3,9 @@ import { DataSource } from 'typeorm';
 import { TYPEORM_ENTITIES } from './entities';
 import { resolvePostgresConnectionConfig } from './postgres-config.util';
 
-const postgresConfig = resolvePostgresConnectionConfig((key) => process.env[key]);
+const postgresConfig = resolvePostgresConnectionConfig(
+  (key) => process.env[key],
+);
 
 const AppDataSource = new DataSource({
   type: 'postgres',

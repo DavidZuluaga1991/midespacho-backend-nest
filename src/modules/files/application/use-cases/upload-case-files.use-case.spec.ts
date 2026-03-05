@@ -28,6 +28,7 @@ describe('UploadCaseFilesUseCase', () => {
       create: jest.fn(),
       existsByCode: jest.fn(),
       findById: jest.fn(),
+      list: jest.fn(),
     };
     userRepository = { existsById: jest.fn() };
     fileBatchRepository = { create: jest.fn() };

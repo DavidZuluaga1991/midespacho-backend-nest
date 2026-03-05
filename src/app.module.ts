@@ -24,6 +24,7 @@ import { LocalStorageAdapter } from './modules/files/infrastructure/storage/loca
 import { CloudinaryStorageAdapter } from './modules/files/infrastructure/storage/cloudinary-storage.adapter';
 import { TypeOrmTransactionManagerAdapter } from './shared/infrastructure/typeorm/typeorm-transaction-manager.adapter';
 import { CreateCaseUseCase } from './modules/cases/application/use-cases/create-case.use-case';
+import { ListCasesUseCase } from './modules/cases/application/use-cases/list-cases.use-case';
 import { UploadCaseFilesUseCase } from './modules/files/application/use-cases/upload-case-files.use-case';
 import { ListCaseFilesUseCase } from './modules/files/application/use-cases/list-case-files.use-case';
 import { DeleteCaseFileUseCase } from './modules/files/application/use-cases/delete-case-file.use-case';
@@ -53,6 +54,7 @@ import { CaseFilesController } from './modules/files/interface/http/case-files.c
   providers: [
     AppService,
     CreateCaseUseCase,
+    ListCasesUseCase,
     GetCaseByIdUseCase,
     UploadCaseFilesUseCase,
     ListCaseFilesUseCase,

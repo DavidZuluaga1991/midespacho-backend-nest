@@ -14,6 +14,7 @@ describe('ListCaseFilesUseCase', () => {
       create: jest.fn(),
       existsByCode: jest.fn(),
       findById: jest.fn(),
+      list: jest.fn(),
     };
     caseFileRepository = {
       createMany: jest.fn(),

@@ -3,6 +3,8 @@ import { DataSource } from 'typeorm';
 import {
   CaseRepositoryPort,
   CreateCaseRepositoryInput,
+  ListCasesRepositoryParams,
+  ListCasesRepositoryResult,
 } from '../../application/ports/case-repository.port';
 import { Case } from '../../domain/entities/case';
 import { CaseEntity } from '../persistence/entities/case.entity';
@@ -53,5 +55,29 @@ export class TypeOrmCaseRepository implements CaseRepositoryPort {
       .getRepository(CaseEntity)
       .findOne({ where: { id: caseId } });
     return entity ? toDomain(entity) : null;
+  }
+
+  async list(
+    params: ListCasesRepositoryParams,
+  ): Promise<ListCasesRepositoryResult> {
+    const repository = this.dataSource.getRepository(CaseEntity);
+    const query = repository
+      .createQueryBuilder('c')
+      .orderBy('c.openedAt', 'DESC')
+      .addOrderBy('c.createdAt', 'DESC')
+      .skip((params.page - 1) * params.limit)
+      .take(params.limit);
+
+    if (params.search) {
+      query.andWhere('(c.code ILIKE :search OR c.title ILIKE :search)', {
+        search: `%${params.search}%`,
+      });
+    }
+
+    const [rows, total] = await query.getManyAndCount();
+    return {
+      data: rows.map(toDomain),
+      total,
+    };
   }
 }
