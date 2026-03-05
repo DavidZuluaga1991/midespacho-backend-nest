@@ -1,5 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { CASE_REPOSITORY, CASE_FILE_REPOSITORY } from '../../../../shared/di/tokens';
+import {
+  CASE_REPOSITORY,
+  CASE_FILE_REPOSITORY,
+} from '../../../../shared/di/tokens';
 import { NotFoundApplicationError } from '../../../../shared/application/errors/application.error';
 import { CaseRepositoryPort } from '../../../cases/application/ports/case-repository.port';
 import { CaseFileRepositoryPort } from '../ports/case-file-repository.port';
@@ -26,14 +29,18 @@ export interface ListCaseFilesOutput {
 @Injectable()
 export class ListCaseFilesUseCase {
   constructor(
-    @Inject(CASE_REPOSITORY) private readonly caseRepository: CaseRepositoryPort,
-    @Inject(CASE_FILE_REPOSITORY) private readonly caseFileRepository: CaseFileRepositoryPort,
+    @Inject(CASE_REPOSITORY)
+    private readonly caseRepository: CaseRepositoryPort,
+    @Inject(CASE_FILE_REPOSITORY)
+    private readonly caseFileRepository: CaseFileRepositoryPort,
   ) {}
 
   async execute(input: ListCaseFilesInput): Promise<ListCaseFilesOutput> {
     const caseEntity = await this.caseRepository.findById(input.caseId);
     if (!caseEntity) {
-      throw new NotFoundApplicationError(`Case '${input.caseId}' was not found.`);
+      throw new NotFoundApplicationError(
+        `Case '${input.caseId}' was not found.`,
+      );
     }
 
     const page = Math.max(1, input.page ?? 1);
@@ -57,4 +64,3 @@ export class ListCaseFilesUseCase {
     };
   }
 }
-

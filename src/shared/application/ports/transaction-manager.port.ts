@@ -5,6 +5,7 @@ export interface TransactionContext {
 }
 
 export interface TransactionManagerPort {
-  runInTransaction<T>(operation: (context: TransactionContext) => Promise<T>): Promise<T>;
+  runInTransaction<T>(
+    operation: (context: TransactionContext) => Promise<T>,
+  ): Promise<T>;
 }
-

@@ -76,4 +76,3 @@ export class CaseEntity {
   @OneToMany(() => CaseFileEntity, (fileEntity) => fileEntity.case)
   files!: CaseFileEntity[];
 }
-

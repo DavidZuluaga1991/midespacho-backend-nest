@@ -4,4 +4,3 @@ export enum CaseStatus {
   ON_HOLD = 'ON_HOLD',
   CLOSED = 'CLOSED',
 }
-

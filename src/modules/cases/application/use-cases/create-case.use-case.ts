@@ -1,6 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { CLIENT_REPOSITORY, USER_REPOSITORY, CASE_REPOSITORY } from '../../../../shared/di/tokens';
-import { ConflictApplicationError, NotFoundApplicationError } from '../../../../shared/application/errors/application.error';
+import {
+  CLIENT_REPOSITORY,
+  USER_REPOSITORY,
+  CASE_REPOSITORY,
+} from '../../../../shared/di/tokens';
+import {
+  ConflictApplicationError,
+  NotFoundApplicationError,
+} from '../../../../shared/application/errors/application.error';
 import { ClientRepositoryPort } from '../../../clients/application/ports/client-repository.port';
 import { UserRepositoryPort } from '../../../users/application/ports/user-repository.port';
 import { CaseRepositoryPort } from '../ports/case-repository.port';
@@ -21,9 +28,12 @@ export interface CreateCaseInput {
 @Injectable()
 export class CreateCaseUseCase {
   constructor(
-    @Inject(CASE_REPOSITORY) private readonly caseRepository: CaseRepositoryPort,
-    @Inject(CLIENT_REPOSITORY) private readonly clientRepository: ClientRepositoryPort,
-    @Inject(USER_REPOSITORY) private readonly userRepository: UserRepositoryPort,
+    @Inject(CASE_REPOSITORY)
+    private readonly caseRepository: CaseRepositoryPort,
+    @Inject(CLIENT_REPOSITORY)
+    private readonly clientRepository: ClientRepositoryPort,
+    @Inject(USER_REPOSITORY)
+    private readonly userRepository: UserRepositoryPort,
   ) {}
 
   async execute(input: CreateCaseInput): Promise<Case> {
@@ -33,17 +43,25 @@ export class CreateCaseUseCase {
     ]);
 
     if (codeInUse) {
-      throw new ConflictApplicationError(`Case code '${input.code}' already exists.`);
+      throw new ConflictApplicationError(
+        `Case code '${input.code}' already exists.`,
+      );
     }
 
     if (!clientExists) {
-      throw new NotFoundApplicationError(`Client '${input.clientId}' was not found.`);
+      throw new NotFoundApplicationError(
+        `Client '${input.clientId}' was not found.`,
+      );
     }
 
     if (input.createdById) {
-      const userExists = await this.userRepository.existsById(input.createdById);
+      const userExists = await this.userRepository.existsById(
+        input.createdById,
+      );
       if (!userExists) {
-        throw new NotFoundApplicationError(`User '${input.createdById}' was not found.`);
+        throw new NotFoundApplicationError(
+          `User '${input.createdById}' was not found.`,
+        );
       }
     }
 
@@ -59,4 +77,3 @@ export class CreateCaseUseCase {
     });
   }
 }
-

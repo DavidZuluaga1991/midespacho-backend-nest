@@ -8,7 +8,8 @@ export class TypeOrmUserRepository implements UserRepositoryPort {
   constructor(private readonly dataSource: DataSource) {}
 
   existsById(userId: string): Promise<boolean> {
-    return this.dataSource.getRepository(UserEntity).exists({ where: { id: userId } });
+    return this.dataSource
+      .getRepository(UserEntity)
+      .exists({ where: { id: userId } });
   }
 }
-

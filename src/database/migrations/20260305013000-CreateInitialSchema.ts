@@ -5,8 +5,12 @@ export class CreateInitialSchema20260305013000 implements MigrationInterface {
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(`CREATE EXTENSION IF NOT EXISTS "pgcrypto"`);
-    await queryRunner.query(`CREATE TYPE "user_role_enum" AS ENUM ('ADMIN', 'LAWYER', 'ASSISTANT')`);
-    await queryRunner.query(`CREATE TYPE "case_status_enum" AS ENUM ('OPEN', 'IN_PROGRESS', 'ON_HOLD', 'CLOSED')`);
+    await queryRunner.query(
+      `CREATE TYPE "user_role_enum" AS ENUM ('ADMIN', 'LAWYER', 'ASSISTANT')`,
+    );
+    await queryRunner.query(
+      `CREATE TYPE "case_status_enum" AS ENUM ('OPEN', 'IN_PROGRESS', 'ON_HOLD', 'CLOSED')`,
+    );
 
     await queryRunner.query(`
       CREATE TABLE "users" (
@@ -94,22 +98,44 @@ export class CreateInitialSchema20260305013000 implements MigrationInterface {
       )
     `);
 
-    await queryRunner.query(`CREATE INDEX "IDX_cases_client_status" ON "cases" ("client_id", "status")`);
-    await queryRunner.query(`CREATE INDEX "IDX_file_batches_case_id_created_at" ON "file_batches" ("case_id", "created_at")`);
-    await queryRunner.query(`CREATE INDEX "IDX_file_batches_case_id_created_at_desc" ON "file_batches" ("case_id", "created_at" DESC)`);
-    await queryRunner.query(`CREATE INDEX "IDX_case_files_case_id" ON "case_files" ("case_id")`);
-    await queryRunner.query(`CREATE INDEX "IDX_case_files_batch_id" ON "case_files" ("batch_id")`);
-    await queryRunner.query(`CREATE INDEX "IDX_case_files_case_id_created_at" ON "case_files" ("case_id", "created_at")`);
-    await queryRunner.query(`CREATE INDEX "IDX_case_files_case_id_created_at_desc" ON "case_files" ("case_id", "created_at" DESC)`);
+    await queryRunner.query(
+      `CREATE INDEX "IDX_cases_client_status" ON "cases" ("client_id", "status")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_file_batches_case_id_created_at" ON "file_batches" ("case_id", "created_at")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_file_batches_case_id_created_at_desc" ON "file_batches" ("case_id", "created_at" DESC)`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_case_files_case_id" ON "case_files" ("case_id")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_case_files_batch_id" ON "case_files" ("batch_id")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_case_files_case_id_created_at" ON "case_files" ("case_id", "created_at")`,
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_case_files_case_id_created_at_desc" ON "case_files" ("case_id", "created_at" DESC)`,
+    );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(`DROP INDEX IF EXISTS "IDX_case_files_case_id_created_at_desc"`);
-    await queryRunner.query(`DROP INDEX IF EXISTS "IDX_case_files_case_id_created_at"`);
+    await queryRunner.query(
+      `DROP INDEX IF EXISTS "IDX_case_files_case_id_created_at_desc"`,
+    );
+    await queryRunner.query(
+      `DROP INDEX IF EXISTS "IDX_case_files_case_id_created_at"`,
+    );
     await queryRunner.query(`DROP INDEX IF EXISTS "IDX_case_files_batch_id"`);
     await queryRunner.query(`DROP INDEX IF EXISTS "IDX_case_files_case_id"`);
-    await queryRunner.query(`DROP INDEX IF EXISTS "IDX_file_batches_case_id_created_at_desc"`);
-    await queryRunner.query(`DROP INDEX IF EXISTS "IDX_file_batches_case_id_created_at"`);
+    await queryRunner.query(
+      `DROP INDEX IF EXISTS "IDX_file_batches_case_id_created_at_desc"`,
+    );
+    await queryRunner.query(
+      `DROP INDEX IF EXISTS "IDX_file_batches_case_id_created_at"`,
+    );
     await queryRunner.query(`DROP INDEX IF EXISTS "IDX_cases_client_status"`);
 
     await queryRunner.query(`DROP TABLE IF EXISTS "case_files"`);
@@ -122,4 +148,3 @@ export class CreateInitialSchema20260305013000 implements MigrationInterface {
     await queryRunner.query(`DROP TYPE IF EXISTS "user_role_enum"`);
   }
 }
-

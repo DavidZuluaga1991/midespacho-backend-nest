@@ -6,7 +6,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { getTypeOrmConfig } from './database/typeorm.config';
-import { CASE_FILE_REPOSITORY, CASE_REPOSITORY, CLIENT_REPOSITORY, FILE_BATCH_REPOSITORY, STORAGE_PORT, TRANSACTION_MANAGER, USER_REPOSITORY } from './shared/di/tokens';
+import {
+  CASE_FILE_REPOSITORY,
+  CASE_REPOSITORY,
+  CLIENT_REPOSITORY,
+  FILE_BATCH_REPOSITORY,
+  STORAGE_PORT,
+  TRANSACTION_MANAGER,
+  USER_REPOSITORY,
+} from './shared/di/tokens';
 import { TypeOrmCaseRepository } from './modules/cases/infrastructure/repositories/typeorm-case.repository';
 import { TypeOrmClientRepository } from './modules/clients/infrastructure/repositories/typeorm-client.repository';
 import { TypeOrmUserRepository } from './modules/users/infrastructure/repositories/typeorm-user.repository';
@@ -31,7 +39,8 @@ import { CaseFilesController } from './modules/files/interface/http/case-files.c
     }),
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => getTypeOrmConfig(configService),
+      useFactory: (configService: ConfigService) =>
+        getTypeOrmConfig(configService),
     }),
     ThrottlerModule.forRoot([
       {
@@ -72,7 +81,9 @@ import { CaseFilesController } from './modules/files/interface/http/case-files.c
       provide: STORAGE_PORT,
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => {
-        const provider = configService.get<string>('STORAGE_PROVIDER', 'local').toLowerCase();
+        const provider = configService
+          .get<string>('STORAGE_PROVIDER', 'local')
+          .toLowerCase();
         if (provider === 'cloudinary') {
           return new CloudinaryStorageAdapter(configService);
         }

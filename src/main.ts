@@ -40,8 +40,12 @@ async function bootstrap() {
 
   app.useGlobalFilters(new ApplicationExceptionFilter());
 
-  const uploadsRoutePrefix = process.env.LOCAL_UPLOADS_ROUTE_PREFIX ?? 'uploads';
-  const uploadsDir = resolve(process.cwd(), process.env.LOCAL_UPLOADS_DIR ?? 'uploads');
+  const uploadsRoutePrefix =
+    process.env.LOCAL_UPLOADS_ROUTE_PREFIX ?? 'uploads';
+  const uploadsDir = resolve(
+    process.cwd(),
+    process.env.LOCAL_UPLOADS_DIR ?? 'uploads',
+  );
   app.use(`/${uploadsRoutePrefix}`, serveStatic(uploadsDir));
 
   const swaggerConfig = new DocumentBuilder()
@@ -55,4 +59,4 @@ async function bootstrap() {
 
   await app.listen(process.env.PORT ?? 3000);
 }
-bootstrap();
+void bootstrap();

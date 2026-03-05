@@ -7,4 +7,3 @@ export interface FileBatch {
   createdAt: Date;
   updatedAt: Date;
 }
-

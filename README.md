@@ -1,98 +1,138 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# MiDespacho Backend (NestJS + TypeORM + PostgreSQL)
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Backend del modulo de expediente juridico para la prueba tecnica de MiDespacho.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Objetivo del modulo
+Este servicio expone APIs para:
+- Crear y consultar expedientes.
+- Cargar multiples archivos en una sola accion, agrupados en un lote con `batchTitle` y `batchDescription`.
+- Listar archivos de un expediente con paginacion y filtros.
 
-## Description
+No incluye visor de documentos, solo gestion de carga y listado.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Stack
+- NestJS 11
+- TypeORM 0.3
+- PostgreSQL
+- class-validator / class-transformer
+- Swagger
+- Throttler + Helmet + CORS
 
-## Project setup
+## Arquitectura
+Estructura orientada a Clean Architecture:
+- `src/modules/*/domain`: entidades y enums de dominio.
+- `src/modules/*/application`: casos de uso y puertos.
+- `src/modules/*/infrastructure`: adapters TypeORM y storage.
+- `src/modules/*/interface/http`: controllers y DTOs HTTP.
+- `src/shared`: errores de aplicacion, filtros HTTP y utilidades transaccionales.
 
-```bash
-$ npm install
+## Requisitos
+- Node.js 22+
+- npm 10+
+- PostgreSQL 14+
+
+## Variables de entorno
+Copiar `.env.example` a `.env` y ajustar valores:
+
+```env
+NODE_ENV=development
+PORT=3000
+FRONTEND_URL=http://localhost:4200
+FRONTEND_URLS=http://localhost:4200,http://localhost:4000
+
+DATABASE_HOST=localhost
+DATABASE_PORT=5432
+DATABASE_USERNAME=midespacho
+DATABASE_PASSWORD=midespacho
+DATABASE_NAME=midespacho
+DATABASE_SSL=false
+
+JWT_SECRET=replace_in_env
+JWT_EXPIRES_IN=1h
+COOKIE_NAME=md_auth
+
+STORAGE_PROVIDER=local
+MAX_FILES_PER_UPLOAD=20
+MAX_FILE_SIZE_MB=15
+LOCAL_UPLOADS_DIR=uploads
+LOCAL_UPLOADS_ROUTE_PREFIX=uploads
+LOCAL_UPLOADS_BASE_URL=http://localhost:3000/uploads
+
+CLOUDINARY_CLOUD_NAME=replace_in_env
+CLOUDINARY_API_KEY=replace_in_env
+CLOUDINARY_API_SECRET=replace_in_env
+CLOUDINARY_FOLDER=midespacho
 ```
 
-## Compile and run the project
-
-```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+## Instalacion
+```powershell
+cd E:\Entrevista\MiDespacho\midespacho-backend-nest
+npm.cmd install
 ```
 
-## Run tests
+## Base de datos
+Crear base de datos en PostgreSQL y ejecutar migraciones:
 
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+```powershell
+npm.cmd run migration:run
 ```
 
-## Deployment
+## Ejecutar proyecto
+```powershell
+# desarrollo
+npm.cmd run start:dev
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+# produccion (requiere build)
+npm.cmd run build
+npm.cmd run start:prod
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+API base local:
+- `http://localhost:3000/api/v1`
 
-## Resources
+Swagger:
+- `http://localhost:3000/docs`
 
-Check out a few resources that may come in handy when working with NestJS:
+## Endpoints principales
+Con prefijo global `api/v1`:
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+- `POST /cases`
+- `GET /cases/:caseId`
+- `POST /cases/:caseId/files` (multipart/form-data, campo `files`)
+- `GET /cases/:caseId/files?page=1&limit=20&batchId=&search=`
 
-## Support
+### Ejemplo de carga multiple
+```bash
+curl -X POST "http://localhost:3000/api/v1/cases/<CASE_ID>/files" \
+  -F "batchTitle=Lote Inicial" \
+  -F "batchDescription=Documentos iniciales del expediente" \
+  -F "files=@./demanda.pdf" \
+  -F "files=@./poder.pdf"
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## Calidad y pruebas
+```powershell
+# lint
+npm.cmd run lint
 
-## Stay in touch
+# unit/integration (jest)
+npm.cmd run test
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+# integration especificas
+npm.cmd run test:integration
 
-## License
+# e2e
+npm.cmd run test:e2e
+```
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## Storage
+Soporta 2 providers:
+- `local` (default): guarda archivos en disco y los expone en `/uploads`.
+- `cloudinary`: upload y delete por API de Cloudinary.
+
+Seleccion por variable:
+- `STORAGE_PROVIDER=local|cloudinary`
+
+## Notas
+- En PowerShell de Windows se usa `npm.cmd` para evitar bloqueo por politicas de `npm.ps1`.
+- `case_files` usa soft delete (`deleted_at`) para no perder trazabilidad historica.

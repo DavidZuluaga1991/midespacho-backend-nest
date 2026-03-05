@@ -22,4 +22,3 @@ export class ListCaseFilesResponseDto {
   @ApiProperty({ type: PaginationMetaDto })
   meta!: PaginationMetaDto;
 }
-

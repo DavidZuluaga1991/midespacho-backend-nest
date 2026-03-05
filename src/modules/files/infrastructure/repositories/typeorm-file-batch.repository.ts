@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
-import { FileBatchRepositoryPort, CreateFileBatchRepositoryInput } from '../../application/ports/file-batch-repository.port';
+import {
+  FileBatchRepositoryPort,
+  CreateFileBatchRepositoryInput,
+} from '../../application/ports/file-batch-repository.port';
 import { FileBatch } from '../../domain/entities/file-batch';
 import { FileBatchEntity } from '../persistence/entities/file-batch.entity';
 import { TransactionContext } from '../../../../shared/application/ports/transaction-manager.port';
@@ -20,7 +23,10 @@ const toDomain = (entity: FileBatchEntity): FileBatch => ({
 export class TypeOrmFileBatchRepository implements FileBatchRepositoryPort {
   constructor(private readonly dataSource: DataSource) {}
 
-  async create(input: CreateFileBatchRepositoryInput, context?: TransactionContext): Promise<FileBatch> {
+  async create(
+    input: CreateFileBatchRepositoryInput,
+    context?: TransactionContext,
+  ): Promise<FileBatch> {
     const manager = resolveManager(this.dataSource, context);
     const repository = manager.getRepository(FileBatchEntity);
     const entity = repository.create({
@@ -34,4 +40,3 @@ export class TypeOrmFileBatchRepository implements FileBatchRepositoryPort {
     return toDomain(created);
   }
 }
-

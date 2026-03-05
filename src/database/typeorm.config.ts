@@ -10,7 +10,9 @@ const toBoolean = (value: string | undefined, fallback = false): boolean => {
   return value.toLowerCase() === 'true';
 };
 
-export const getTypeOrmConfig = (configService: ConfigService): TypeOrmModuleOptions => {
+export const getTypeOrmConfig = (
+  configService: ConfigService,
+): TypeOrmModuleOptions => {
   const ssl = toBoolean(configService.get<string>('DATABASE_SSL'), false);
 
   return {
@@ -26,4 +28,3 @@ export const getTypeOrmConfig = (configService: ConfigService): TypeOrmModuleOpt
     logging: false,
   };
 };
-

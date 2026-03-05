@@ -32,7 +32,10 @@ const toDomain = (entity: CaseFileEntity): CaseFile => ({
 export class TypeOrmCaseFileRepository implements CaseFileRepositoryPort {
   constructor(private readonly dataSource: DataSource) {}
 
-  async createMany(inputs: CreateCaseFileRepositoryInput[], context?: TransactionContext): Promise<CaseFile[]> {
+  async createMany(
+    inputs: CreateCaseFileRepositoryInput[],
+    context?: TransactionContext,
+  ): Promise<CaseFile[]> {
     const manager = resolveManager(this.dataSource, context);
     const repository = manager.getRepository(CaseFileEntity);
     const entities = repository.create(
@@ -83,9 +86,11 @@ export class TypeOrmCaseFileRepository implements CaseFileRepositoryPort {
     return entity ? toDomain(entity) : null;
   }
 
-  async softDelete(fileId: string, context?: TransactionContext): Promise<void> {
+  async softDelete(
+    fileId: string,
+    context?: TransactionContext,
+  ): Promise<void> {
     const manager = resolveManager(this.dataSource, context);
     await manager.getRepository(CaseFileEntity).softDelete(fileId);
   }
 }
-

@@ -1,4 +1,12 @@
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  Unique,
+  UpdateDateColumn,
+} from 'typeorm';
 import { CaseEntity } from '../../../../cases/infrastructure/persistence/entities/case.entity';
 import { FileBatchEntity } from '../../../../files/infrastructure/persistence/entities/file-batch.entity';
 import { CaseFileEntity } from '../../../../files/infrastructure/persistence/entities/case-file.entity';
@@ -42,4 +50,3 @@ export class UserEntity {
   @OneToMany(() => CaseFileEntity, (fileEntity) => fileEntity.uploadedBy)
   uploadedFiles!: CaseFileEntity[];
 }
-

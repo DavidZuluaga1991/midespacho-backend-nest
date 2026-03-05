@@ -17,4 +17,3 @@ export interface CaseRepositoryPort {
   existsByCode(code: string): Promise<boolean>;
   findById(caseId: string): Promise<Case | null>;
 }
-

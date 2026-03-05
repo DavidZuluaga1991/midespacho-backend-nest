@@ -27,8 +27,10 @@ describe('ListCaseFilesUseCase', () => {
   it('should throw when case does not exist', async () => {
     caseRepository.findById.mockResolvedValue(null);
 
-    await expect(useCase.execute({ caseId: 'missing-case' })).rejects.toBeInstanceOf(NotFoundApplicationError);
-    expect(caseFileRepository.listByCaseId).not.toHaveBeenCalled();
+    await expect(
+      useCase.execute({ caseId: 'missing-case' }),
+    ).rejects.toBeInstanceOf(NotFoundApplicationError);
+    expect(caseFileRepository.listByCaseId.mock.calls).toHaveLength(0);
   });
 
   it('should clamp page/limit and return pagination metadata', async () => {
@@ -57,7 +59,8 @@ describe('ListCaseFilesUseCase', () => {
       search: 'demanda',
     });
 
-    expect(caseFileRepository.listByCaseId).toHaveBeenCalledWith({
+    expect(caseFileRepository.listByCaseId.mock.calls).toHaveLength(1);
+    expect(caseFileRepository.listByCaseId.mock.calls[0]?.[0]).toEqual({
       caseId: 'case-1',
       page: 1,
       limit: 100,
@@ -72,4 +75,3 @@ describe('ListCaseFilesUseCase', () => {
     });
   });
 });
-

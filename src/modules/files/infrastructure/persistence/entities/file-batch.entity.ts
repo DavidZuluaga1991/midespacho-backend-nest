@@ -52,4 +52,3 @@ export class FileBatchEntity {
   @OneToMany(() => CaseFileEntity, (fileEntity) => fileEntity.batch)
   files!: CaseFileEntity[];
 }
-

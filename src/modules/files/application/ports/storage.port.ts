@@ -16,4 +16,3 @@ export interface StoragePort {
   upload(file: UploadFileInput): Promise<UploadFileResult>;
   delete(storageKey: string): Promise<void>;
 }
-

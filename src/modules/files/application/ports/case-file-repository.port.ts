@@ -28,9 +28,11 @@ export interface ListCaseFilesResult {
 }
 
 export interface CaseFileRepositoryPort {
-  createMany(inputs: CreateCaseFileRepositoryInput[], context?: TransactionContext): Promise<CaseFile[]>;
+  createMany(
+    inputs: CreateCaseFileRepositoryInput[],
+    context?: TransactionContext,
+  ): Promise<CaseFile[]>;
   listByCaseId(query: ListCaseFilesQuery): Promise<ListCaseFilesResult>;
   findById(fileId: string): Promise<CaseFile | null>;
   softDelete(fileId: string, context?: TransactionContext): Promise<void>;
 }
-

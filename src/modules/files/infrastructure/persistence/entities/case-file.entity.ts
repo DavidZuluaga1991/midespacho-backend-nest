@@ -78,4 +78,3 @@ export class CaseFileEntity {
   @JoinColumn({ name: 'uploaded_by_id' })
   uploadedBy!: UserEntity | null;
 }
-

@@ -12,4 +12,3 @@ export class UploadCaseFilesRequestDto {
   @Length(10, 1000)
   batchDescription!: string;
 }
-

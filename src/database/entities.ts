@@ -4,5 +4,10 @@ import { FileBatchEntity } from '../modules/files/infrastructure/persistence/ent
 import { CaseFileEntity } from '../modules/files/infrastructure/persistence/entities/case-file.entity';
 import { UserEntity } from '../modules/users/infrastructure/persistence/entities/user.entity';
 
-export const TYPEORM_ENTITIES = [UserEntity, ClientEntity, CaseEntity, FileBatchEntity, CaseFileEntity];
-
+export const TYPEORM_ENTITIES = [
+  UserEntity,
+  ClientEntity,
+  CaseEntity,
+  FileBatchEntity,
+  CaseFileEntity,
+];

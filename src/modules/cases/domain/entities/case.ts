@@ -13,4 +13,3 @@ export interface Case {
   createdAt: Date;
   updatedAt: Date;
 }
-

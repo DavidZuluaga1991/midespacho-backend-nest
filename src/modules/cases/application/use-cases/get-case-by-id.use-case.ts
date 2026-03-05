@@ -20,4 +20,3 @@ export class GetCaseByIdUseCase {
     return caseEntity;
   }
 }
-

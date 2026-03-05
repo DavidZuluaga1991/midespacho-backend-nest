@@ -2,7 +2,12 @@ import { DataSource } from 'typeorm';
 import AppDataSource from '../../../../database/data-source';
 import { TypeOrmCaseFileRepository } from './typeorm-case-file.repository';
 
-const randomToken = (): string => `${Date.now()}-${Math.floor(Math.random() * 100000)}`;
+const randomToken = (): string =>
+  `${Date.now()}-${Math.floor(Math.random() * 100000)}`;
+
+interface IdRow {
+  id: string;
+}
 
 describe('TypeOrmCaseFileRepository (integration)', () => {
   let dataSource: DataSource;
@@ -25,10 +30,16 @@ describe('TypeOrmCaseFileRepository (integration)', () => {
 
   afterEach(async () => {
     if (createdCaseIds.length) {
-      await dataSource.query(`DELETE FROM "cases" WHERE "id" = ANY($1::uuid[])`, [createdCaseIds]);
+      await dataSource.query(
+        `DELETE FROM "cases" WHERE "id" = ANY($1::uuid[])`,
+        [createdCaseIds],
+      );
     }
     if (createdClientIds.length) {
-      await dataSource.query(`DELETE FROM "clients" WHERE "id" = ANY($1::uuid[])`, [createdClientIds]);
+      await dataSource.query(
+        `DELETE FROM "clients" WHERE "id" = ANY($1::uuid[])`,
+        [createdClientIds],
+      );
     }
   });
 
@@ -38,9 +49,12 @@ describe('TypeOrmCaseFileRepository (integration)', () => {
     }
   });
 
-  const createCaseAndBatch = async (): Promise<{ caseId: string; batchId: string }> => {
+  const createCaseAndBatch = async (): Promise<{
+    caseId: string;
+    batchId: string;
+  }> => {
     const token = randomToken();
-    const [client] = await dataSource.query(
+    const [client] = await dataSource.query<IdRow[]>(
       `
       INSERT INTO "clients" ("full_name", "document_number", "phone", "email")
       VALUES ($1, $2, $3, $4)
@@ -50,7 +64,7 @@ describe('TypeOrmCaseFileRepository (integration)', () => {
     );
     createdClientIds.push(client.id);
 
-    const [caseRow] = await dataSource.query(
+    const [caseRow] = await dataSource.query<IdRow[]>(
       `
       INSERT INTO "cases" ("code", "title", "description", "status", "opened_at", "closed_at", "client_id", "created_by_id")
       VALUES ($1, $2, $3, $4, NOW(), NULL, $5, NULL)
@@ -60,7 +74,7 @@ describe('TypeOrmCaseFileRepository (integration)', () => {
     );
     createdCaseIds.push(caseRow.id);
 
-    const [batch] = await dataSource.query(
+    const [batch] = await dataSource.query<IdRow[]>(
       `
       INSERT INTO "file_batches" ("case_id", "title", "description", "uploaded_by_id")
       VALUES ($1, $2, $3, NULL)
@@ -123,7 +137,7 @@ describe('TypeOrmCaseFileRepository (integration)', () => {
 
   it('should filter by batch/search and exclude soft deleted files', async () => {
     const { caseId, batchId } = await createCaseAndBatch();
-    const [batch2] = await dataSource.query(
+    const [batch2] = await dataSource.query<IdRow[]>(
       `
       INSERT INTO "file_batches" ("case_id", "title", "description", "uploaded_by_id")
       VALUES ($1, $2, $3, NULL)
@@ -162,7 +176,8 @@ describe('TypeOrmCaseFileRepository (integration)', () => {
         batchId: batch2.id,
         originalName: 'contract.docx',
         storedName: 'contract',
-        mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        mimeType:
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         sizeBytes: '10',
         storageProvider: 'local',
         storageKey: 'contract',
@@ -173,8 +188,18 @@ describe('TypeOrmCaseFileRepository (integration)', () => {
 
     await repository.softDelete(created[0].id);
 
-    const byBatch = await repository.listByCaseId({ caseId, page: 1, limit: 10, batchId });
-    const bySearch = await repository.listByCaseId({ caseId, page: 1, limit: 10, search: 'contract' });
+    const byBatch = await repository.listByCaseId({
+      caseId,
+      page: 1,
+      limit: 10,
+      batchId,
+    });
+    const bySearch = await repository.listByCaseId({
+      caseId,
+      page: 1,
+      limit: 10,
+      search: 'contract',
+    });
 
     expect(byBatch.total).toBe(1);
     expect(byBatch.data[0].originalName).toBe('anexo.pdf');
@@ -182,4 +207,3 @@ describe('TypeOrmCaseFileRepository (integration)', () => {
     expect(bySearch.data[0].originalName).toBe('contract.docx');
   });
 });
-

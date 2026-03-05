@@ -9,4 +9,3 @@ export class UploadCaseFilesResponseDto {
   @ApiProperty({ type: [CaseFileResponseDto] })
   files!: CaseFileResponseDto[];
 }
-

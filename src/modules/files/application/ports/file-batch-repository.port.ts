@@ -9,6 +9,8 @@ export interface CreateFileBatchRepositoryInput {
 }
 
 export interface FileBatchRepositoryPort {
-  create(input: CreateFileBatchRepositoryInput, context?: TransactionContext): Promise<FileBatch>;
+  create(
+    input: CreateFileBatchRepositoryInput,
+    context?: TransactionContext,
+  ): Promise<FileBatch>;
 }
-

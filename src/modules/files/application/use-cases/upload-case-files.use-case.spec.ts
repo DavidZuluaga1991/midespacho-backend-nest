@@ -5,7 +5,10 @@ import { FileBatchRepositoryPort } from '../ports/file-batch-repository.port';
 import { CaseFileRepositoryPort } from '../ports/case-file-repository.port';
 import { StoragePort } from '../ports/storage.port';
 import { UploadCaseFilesUseCase } from './upload-case-files.use-case';
-import { TransactionManagerPort } from '../../../../shared/application/ports/transaction-manager.port';
+import {
+  TransactionContext,
+  TransactionManagerPort,
+} from '../../../../shared/application/ports/transaction-manager.port';
 import { ValidationApplicationError } from '../../../../shared/application/errors/application.error';
 
 describe('UploadCaseFilesUseCase', () => {
@@ -15,7 +18,9 @@ describe('UploadCaseFilesUseCase', () => {
   let caseFileRepository: jest.Mocked<CaseFileRepositoryPort>;
   let storagePort: jest.Mocked<StoragePort>;
   let transactionManager: TransactionManagerPort;
-  let runInTransactionMock: jest.Mock;
+  let runInTransactionMock: jest.MockedFunction<
+    TransactionManagerPort['runInTransaction']
+  >;
   let useCase: UploadCaseFilesUseCase;
 
   beforeEach(() => {
@@ -33,9 +38,15 @@ describe('UploadCaseFilesUseCase', () => {
       softDelete: jest.fn(),
     };
     storagePort = { upload: jest.fn(), delete: jest.fn() };
-    runInTransactionMock = jest.fn(async (operation) => operation({ manager: {} as never }));
+    runInTransactionMock = jest.fn(
+      <T>(operation: (context: TransactionContext) => Promise<T>): Promise<T> =>
+        operation({ manager: {} as never }),
+    ) as unknown as jest.MockedFunction<
+      TransactionManagerPort['runInTransaction']
+    >;
     transactionManager = {
-      runInTransaction: ((operation) => runInTransactionMock(operation)) as TransactionManagerPort['runInTransaction'],
+      runInTransaction:
+        runInTransactionMock as TransactionManagerPort['runInTransaction'],
     };
 
     useCase = new UploadCaseFilesUseCase(
@@ -54,11 +65,18 @@ describe('UploadCaseFilesUseCase', () => {
         caseId: 'case-1',
         batchTitle: 'ab',
         batchDescription: 'descripcion valida',
-        files: [{ buffer: Buffer.from('a'), originalName: 'doc.txt', mimeType: 'text/plain', sizeBytes: 1 }],
+        files: [
+          {
+            buffer: Buffer.from('a'),
+            originalName: 'doc.txt',
+            mimeType: 'text/plain',
+            sizeBytes: 1,
+          },
+        ],
       }),
     ).rejects.toBeInstanceOf(ValidationApplicationError);
 
-    expect(caseRepository.findById).not.toHaveBeenCalled();
+    expect(caseRepository.findById.mock.calls).toHaveLength(0);
   });
 
   it('should fail when case is closed', async () => {
@@ -81,7 +99,14 @@ describe('UploadCaseFilesUseCase', () => {
         caseId: 'case-1',
         batchTitle: 'Lote inicial',
         batchDescription: 'descripcion valida para la prueba',
-        files: [{ buffer: Buffer.from('a'), originalName: 'doc.txt', mimeType: 'text/plain', sizeBytes: 1 }],
+        files: [
+          {
+            buffer: Buffer.from('a'),
+            originalName: 'doc.txt',
+            mimeType: 'text/plain',
+            sizeBytes: 1,
+          },
+        ],
       }),
     ).rejects.toBeInstanceOf(ValidationApplicationError);
   });
@@ -148,17 +173,30 @@ describe('UploadCaseFilesUseCase', () => {
       batchDescription: 'descripcion valida para la prueba',
       uploadedById: 'user-1',
       files: [
-        { buffer: Buffer.from('a'), originalName: 'a.txt', mimeType: 'text/plain', sizeBytes: 10 },
-        { buffer: Buffer.from('b'), originalName: 'b.txt', mimeType: 'text/plain', sizeBytes: 20 },
+        {
+          buffer: Buffer.from('a'),
+          originalName: 'a.txt',
+          mimeType: 'text/plain',
+          sizeBytes: 10,
+        },
+        {
+          buffer: Buffer.from('b'),
+          originalName: 'b.txt',
+          mimeType: 'text/plain',
+          sizeBytes: 20,
+        },
       ],
     });
 
-    expect(storagePort.upload).toHaveBeenCalledTimes(2);
-    expect(fileBatchRepository.create).toHaveBeenCalledWith(
+    expect(storagePort.upload.mock.calls).toHaveLength(2);
+    expect(fileBatchRepository.create.mock.calls).toHaveLength(1);
+    expect(fileBatchRepository.create.mock.calls[0]?.[0]).toEqual(
       expect.objectContaining({ title: 'Lote inicial' }),
+    );
+    expect(fileBatchRepository.create.mock.calls[0]?.[1]).toEqual(
       expect.any(Object),
     );
-    expect(caseFileRepository.createMany).toHaveBeenCalledTimes(1);
+    expect(caseFileRepository.createMany.mock.calls).toHaveLength(1);
     expect(result.batch.id).toBe('batch-1');
     expect(result.files).toHaveLength(1);
   });
@@ -190,10 +228,17 @@ describe('UploadCaseFilesUseCase', () => {
         caseId: 'case-1',
         batchTitle: 'Lote inicial',
         batchDescription: 'descripcion valida para la prueba',
-        files: [{ buffer: Buffer.from('a'), originalName: 'a.txt', mimeType: 'text/plain', sizeBytes: 10 }],
+        files: [
+          {
+            buffer: Buffer.from('a'),
+            originalName: 'a.txt',
+            mimeType: 'text/plain',
+            sizeBytes: 10,
+          },
+        ],
       }),
     ).rejects.toThrow('DB failed');
 
-    expect(storagePort.delete).toHaveBeenCalledWith('stored-1');
+    expect(storagePort.delete.mock.calls).toContainEqual(['stored-1']);
   });
 });

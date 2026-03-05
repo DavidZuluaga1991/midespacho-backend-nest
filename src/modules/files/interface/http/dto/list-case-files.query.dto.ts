@@ -28,4 +28,3 @@ export class ListCaseFilesQueryDto {
   @IsString()
   search?: string;
 }
-

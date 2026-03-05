@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource } from 'typeorm';
-import { CaseRepositoryPort, CreateCaseRepositoryInput } from '../../application/ports/case-repository.port';
+import {
+  CaseRepositoryPort,
+  CreateCaseRepositoryInput,
+} from '../../application/ports/case-repository.port';
 import { Case } from '../../domain/entities/case';
 import { CaseEntity } from '../persistence/entities/case.entity';
 
@@ -40,12 +43,15 @@ export class TypeOrmCaseRepository implements CaseRepositoryPort {
   }
 
   existsByCode(code: string): Promise<boolean> {
-    return this.dataSource.getRepository(CaseEntity).exists({ where: { code } });
+    return this.dataSource
+      .getRepository(CaseEntity)
+      .exists({ where: { code } });
   }
 
   async findById(caseId: string): Promise<Case | null> {
-    const entity = await this.dataSource.getRepository(CaseEntity).findOne({ where: { id: caseId } });
+    const entity = await this.dataSource
+      .getRepository(CaseEntity)
+      .findOne({ where: { id: caseId } });
     return entity ? toDomain(entity) : null;
   }
 }
-

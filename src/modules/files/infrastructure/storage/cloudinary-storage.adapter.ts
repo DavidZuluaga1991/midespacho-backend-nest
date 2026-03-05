@@ -1,8 +1,16 @@
 import { ConfigService } from '@nestjs/config';
-import { v2 as cloudinary, UploadApiErrorResponse, UploadApiResponse } from 'cloudinary';
+import {
+  v2 as cloudinary,
+  UploadApiErrorResponse,
+  UploadApiResponse,
+} from 'cloudinary';
 import { randomUUID } from 'crypto';
 import { extname } from 'path';
-import { StoragePort, UploadFileInput, UploadFileResult } from '../../application/ports/storage.port';
+import {
+  StoragePort,
+  UploadFileInput,
+  UploadFileResult,
+} from '../../application/ports/storage.port';
 
 export class CloudinaryStorageAdapter implements StoragePort {
   private readonly folder: string;
@@ -13,10 +21,15 @@ export class CloudinaryStorageAdapter implements StoragePort {
     const apiSecret = this.configService.get<string>('CLOUDINARY_API_SECRET');
 
     if (!cloudName || !apiKey || !apiSecret) {
-      throw new Error('Cloudinary configuration is missing. Check CLOUDINARY_CLOUD_NAME/API_KEY/API_SECRET.');
+      throw new Error(
+        'Cloudinary configuration is missing. Check CLOUDINARY_CLOUD_NAME/API_KEY/API_SECRET.',
+      );
     }
 
-    this.folder = this.configService.get<string>('CLOUDINARY_FOLDER', 'midespacho');
+    this.folder = this.configService.get<string>(
+      'CLOUDINARY_FOLDER',
+      'midespacho',
+    );
 
     cloudinary.config({
       cloud_name: cloudName,
@@ -37,9 +50,16 @@ export class CloudinaryStorageAdapter implements StoragePort {
           resource_type: 'auto',
           public_id: publicId,
         },
-        (error: UploadApiErrorResponse | undefined, result: UploadApiResponse | undefined) => {
+        (
+          error: UploadApiErrorResponse | undefined,
+          result: UploadApiResponse | undefined,
+        ) => {
           if (error || !result) {
-            reject(error ?? new Error('Cloudinary upload failed.'));
+            reject(
+              error
+                ? new Error(error.message)
+                : new Error('Cloudinary upload failed.'),
+            );
             return;
           }
 
@@ -57,13 +77,17 @@ export class CloudinaryStorageAdapter implements StoragePort {
   }
 
   async delete(storageKey: string): Promise<void> {
-    const resourceTypes: Array<'raw' | 'image' | 'video'> = ['raw', 'image', 'video'];
+    const resourceTypes: Array<'raw' | 'image' | 'video'> = [
+      'raw',
+      'image',
+      'video',
+    ];
 
     for (const resourceType of resourceTypes) {
-      const result = await cloudinary.uploader.destroy(storageKey, {
+      const result = (await cloudinary.uploader.destroy(storageKey, {
         resource_type: resourceType,
         invalidate: true,
-      });
+      })) as { result?: string };
 
       if (result.result === 'ok' || result.result === 'not found') {
         break;
@@ -71,4 +95,3 @@ export class CloudinaryStorageAdapter implements StoragePort {
     }
   }
 }
-

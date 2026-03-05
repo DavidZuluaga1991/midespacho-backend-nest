@@ -14,4 +14,3 @@ export interface CaseFile {
   updatedAt: Date;
   deletedAt: Date | null;
 }
-

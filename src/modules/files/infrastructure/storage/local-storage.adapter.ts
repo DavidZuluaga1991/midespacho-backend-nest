@@ -2,7 +2,11 @@ import { ConfigService } from '@nestjs/config';
 import { randomUUID } from 'crypto';
 import { mkdir, unlink, writeFile } from 'fs/promises';
 import { join, resolve } from 'path';
-import { StoragePort, UploadFileInput, UploadFileResult } from '../../application/ports/storage.port';
+import {
+  StoragePort,
+  UploadFileInput,
+  UploadFileResult,
+} from '../../application/ports/storage.port';
 
 const sanitizeFileName = (fileName: string): string => {
   return fileName.replace(/[^a-zA-Z0-9._-]/g, '_');
@@ -13,9 +17,15 @@ export class LocalStorageAdapter implements StoragePort {
   private readonly baseUrl: string;
 
   constructor(private readonly configService: ConfigService) {
-    this.uploadsDir = resolve(process.cwd(), this.configService.get<string>('LOCAL_UPLOADS_DIR', 'uploads'));
+    this.uploadsDir = resolve(
+      process.cwd(),
+      this.configService.get<string>('LOCAL_UPLOADS_DIR', 'uploads'),
+    );
 
-    const routePrefix = this.configService.get<string>('LOCAL_UPLOADS_ROUTE_PREFIX', 'uploads');
+    const routePrefix = this.configService.get<string>(
+      'LOCAL_UPLOADS_ROUTE_PREFIX',
+      'uploads',
+    );
     this.baseUrl =
       this.configService.get<string>('LOCAL_UPLOADS_BASE_URL') ??
       `http://localhost:${this.configService.get<string>('PORT', '3000')}/${routePrefix}`;
@@ -47,4 +57,3 @@ export class LocalStorageAdapter implements StoragePort {
     }
   }
 }
-

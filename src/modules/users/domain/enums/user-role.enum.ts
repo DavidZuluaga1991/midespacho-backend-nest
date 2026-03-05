@@ -3,4 +3,3 @@ export enum UserRole {
   LAWYER = 'LAWYER',
   ASSISTANT = 'ASSISTANT',
 }
-

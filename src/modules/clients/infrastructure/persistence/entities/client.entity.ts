@@ -1,4 +1,12 @@
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+  Unique,
+  UpdateDateColumn,
+} from 'typeorm';
 import { CaseEntity } from '../../../../cases/infrastructure/persistence/entities/case.entity';
 
 @Entity({ name: 'clients' })
@@ -28,4 +36,3 @@ export class ClientEntity {
   @OneToMany(() => CaseEntity, (caseEntity) => caseEntity.client)
   cases!: CaseEntity[];
 }
-

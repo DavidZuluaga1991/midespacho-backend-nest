@@ -8,7 +8,8 @@ export class TypeOrmClientRepository implements ClientRepositoryPort {
   constructor(private readonly dataSource: DataSource) {}
 
   existsById(clientId: string): Promise<boolean> {
-    return this.dataSource.getRepository(ClientEntity).exists({ where: { id: clientId } });
+    return this.dataSource
+      .getRepository(ClientEntity)
+      .exists({ where: { id: clientId } });
   }
 }
-
